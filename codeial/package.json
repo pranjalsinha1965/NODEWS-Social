@@ -13,6 +13,7 @@
   "author": "CodingNinjas",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "codeial": "file:",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^2.0.3",
