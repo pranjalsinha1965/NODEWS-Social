@@ -1,69 +1,62 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const User = require('../models/user');  // Ensure you have a User model in your project
+const User = require('../models/user');
 
-// Authentication using Passport Local Strategy
-passport.use(
-  new LocalStrategy(
-    { usernameField: 'email' }, // Specify the field to use for username (e.g., email)
-    async (email, password, done) => {
-      try {
-        // Find user by email
-        const user = await User.findOne({ email });
+// authentication using passport
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passReqToCallback: true
+},
+async function(req, email, password, done){
+    try {
+        // Find a user and establish the identity
+        const user = await User.findOne({ email: email }); // Use async/await
 
-        // Check if user exists and if passwords match
-        if (!user || user.password !== password) {
-          console.log('Invalid Username/Password');
-          return done(null, false, { message: 'Invalid Username/Password' });
+        if (!user || user.password !== password) { // Use strict comparison
+            req.flash('error', 'Invalid Username/Password');
+            return done(null, false);
         }
-
-        // If authentication is successful, pass the user object
         return done(null, user);
-      } catch (err) {
-        console.log('Error in finding user --> Passport', err);
-        return done(err);
-      }
+    } catch (err) {
+        console.log("Error in finding user --> Passport: ", err);
+        return done(err); // Ensure to return the error
     }
-  )
-);
-
-// Serializing the user to decide which key is to be kept in the cookies
-passport.serializeUser((user, done) => {
-  // Store only the user ID in the session (to minimize session data)
-  done(null, user.id);
+}
+));
+// serializing the user to decide which key is to be kept in the cookies
+passport.serializeUser(function(user, done) {
+    done(null, user.id);
 });
-
-// Deserializing the user from the key in the cookies
-passport.deserializeUser(async (id, done) => {
-  try {
-    // Find the user by ID from the database
-    const user = await User.findById(id);
-    
-    // If user is found, pass it along
-    done(null, user);
-  } catch (err) {
-    console.log('Error in finding user --> Passport');
-    done(err);
-  }
+// deserializing the user from the key in the cookies
+passport.deserializeUser(async function(id, done) {
+    try {
+        const user = await User.findById(id);
+        if (!user) {
+            console.log('User not found --> Passport');
+            return done(null, false);
+        }
+        return done(null, user);
+    } catch (err) {
+        console.log('Error in finding user --> Passport:', err);
+        return done(err);
+    }
 });
-
-// Middleware to check if the user is authenticated
-passport.checkAuthentication = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    // If authenticated, move to the next middleware
-    return next();
-  }
-  // If not authenticated, redirect to the login page
-  return res.redirect('/users/sign-in');
-};
-
-// Middleware to set authenticated user in locals
-passport.setAuthenticatedUser = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    // If user is authenticated, set user in res.locals to make it available in all views
-    res.locals.user = req.user;
-  }
-  next();
-};
-
+// check if the user is authenticated
+passport.checkAuthentication = function(req, res, next) {
+    // if the user is signed in, then pass on the request to the next function (controller's action)
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    // if the user is not signed in
+    return res.redirect('/users/sign-in');
+}
+// Set authenticated user for views
+passport.setAuthenticatedUser = function(req, res, next) {
+    if (req.isAuthenticated()) {
+        // req.user contains the current signed-in user from the session cookie
+        // and we are just sending this to the locals for the views
+        res.locals.user = req.user;
+    }
+    next();
+}
 module.exports = passport;

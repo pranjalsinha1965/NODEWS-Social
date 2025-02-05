@@ -1,3 +1,4 @@
+
 const Comment = require('../models/comment');
 const Post = require('../models/post');
 
@@ -64,4 +65,3 @@ module.exports.destroy = async function(req, res) {
         return res.redirect('back');
     }
 };
-
