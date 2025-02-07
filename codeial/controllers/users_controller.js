@@ -377,12 +377,16 @@
 // };
 
 
+const { fstat } = require('fs');
+const fs = require('fs');
 const User = require('../models/user');
+const path = require('path')
 
 // Profile
 module.exports.profile = async function(req, res) {
     try {
         const user = await User.findById(req.params.id);
+        
         if (!user) {
             req.flash('error', 'User not found');
             return res.redirect('/');
@@ -400,21 +404,34 @@ module.exports.profile = async function(req, res) {
 
 // Update user profile
 module.exports.update = async function(req, res) {
-    try {
         if (req.user.id == req.params.id) {
-            const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-            req.flash('success', 'Updated!');
-            return res.redirect('back');
-        } else {
-            req.flash('error', 'Unauthorized!');
-            return res.status(401).send('Unauthorized');
-        }
+            try{
+                let user = await User.findById(req.params.id);
+                User.uploadedAvatar(req, res, function(err) {
+                if(err){
+                    console.log('Multer Error: ', err);
+                }
+                user.name = req.body.name;
+                user.email = req.body.email;
+                if(req.file) {
+                    // if(user.avatar){
+                    //     fstat.unlinkSync(path.join(__dirname, '..', user.avatar));
+                    // }
+                    // this is saving the path of the upload file into the avatar field in the user
+                    user.avatar = User.avatarPath + '/' + req.file.filename;
+                }
+                user.save();
+                return res.redirect('back');
+            });
     } catch (err) {
-        console.error('Error updating user:', err);
         req.flash('error', 'Internal server error');
-        return res.status(500).send('Internal Server Error');
+        return res.redirect('back');
     }
-}
+    } else {
+        req.flash('error', 'Unauthorized!');
+        return res.status(401).send(Unauthorized);
+    }
+};
 
 // Render the sign-up page
 module.exports.signUp = function(req, res) {
