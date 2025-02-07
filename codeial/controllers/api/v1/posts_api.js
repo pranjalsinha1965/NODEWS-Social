@@ -23,26 +23,24 @@ module.exports.index = async function (req, res) {
   }
 };
 
-module.exports.destroy = async function (req, res) {
-  try {
+module.exports.destroy = async function(req, body){
+  try{
     let post = await Post.findById(req.params.id);
-
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+    if(post.user == req.user.id){
+      post.remove();
+      await Comment.deleteMany({post: req.params.id});
+      return res.json(200, {
+        message: "Post and associated commenst deleted successfully !!"
+      });
+    } else {
+      return res.json(401, {
+        message: "You cannot delete this post!"
+      });
     }
-
-    // Remove the post
-    await post.remove();
-
-    // Remove all comments associated with the post
-    await Comment.deleteMany({ post: req.params.id });
-
-    return res.status(200).json({
-      message: "Post and associated comments deleted successfully"
+  } catch(err){
+    console.log('*****', err);
+    return res.json(500, {
+      message: "Internal Server Error"
     });
-
-  } catch (err) {
-    console.error('Error:', err);
-    return res.status(500).json({ message: "Internal server error" });
   }
-};
+}
