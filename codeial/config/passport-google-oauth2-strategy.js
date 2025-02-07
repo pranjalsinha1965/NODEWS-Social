@@ -1,37 +1,34 @@
 const passport = require('passport');
-const googleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const crypto = require('crypto');
 const User = require('../models/user');
 
-// tell passport to use a new strategy for google login
-passport.use(new googleStrategy({
+passport.use(new GoogleStrategy({
   clientID: "553152377599-vuo0t2pgi1u3tn5f0s22b98n9eg4pono.apps.googleusercontent.com",
-  clientSecret: "GOCSPX-Prpjqgit_mseflPhSOXR0WghAuU",
+  clientSecret: "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",
   callbackURL: "http://localhost:7862/users/auth/google/callback",
-}, 
-function(accessToken, refreshToken, profile, done){
-  // find a user
-  User.findOne({email: profile.emails[0].value}).exec(function(err, user){
-      if (err){console.log('error in google strategy-passport', err); return;}
-      console.log(accessToken, refreshToken);
-      console.log(profile);
-      if (user){
-          // if found, set this user as req.user
-          return done(null, user);
-      }else{
-          // if not found, create the user and set it as req.user
-          User.create({
-              name: profile.displayName,
-              email: profile.emails[0].value,
-              password: crypto.randomBytes(20).toString('hex')
-          }, function(err, user){
-              if (err){console.log('error in creating user google strategy-passport', err); return;}
-              return done(null, user);
-          });
-      }
-  }); 
-}
-));
+},
+async (accessToken, refreshToken, profile, done) => {
+  try {
+    // Find user with modern async/await approach
+    let user = await User.findOne({ email: profile.emails[0].value });
+
+    if (user) {
+      return done(null, user); // User exists, pass it to passport
+    }
+
+    // Create a new user if not found
+    user = await User.create({
+      name: profile.displayName,
+      email: profile.emails[0].value,
+      password: crypto.randomBytes(20).toString('hex'),
+    });
+
+    return done(null, user);
+  } catch (err) {
+    console.error('Error in Google strategy:', err);
+    return done(err);
+  }
+}));
+
 module.exports = passport;
-
-
