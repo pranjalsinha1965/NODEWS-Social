@@ -377,7 +377,6 @@
 // };
 
 
-const { fstat } = require('fs');
 const fs = require('fs');
 const User = require('../models/user');
 const path = require('path')

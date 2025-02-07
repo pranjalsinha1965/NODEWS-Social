@@ -7,37 +7,36 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   password: {
     type: String,
-    required: true
+    required: true,
   },
   name: {
     type: String,
-    required: true
-  }, 
+    required: true,
+  },
   avatar: {
-    type: String
-  }
+    type: String,
+  },
 }, {
-  timestamps: true
+  timestamps: true,
 });
 
 let storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, '..', AVATAR_PATH));
-  }, 
-  filename: function(req, file, cb) {
+  },
+
+  filename: function (req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
+  
 });
 
 // Static methods for file upload and avatar path
-userSchema.statics.uploadedAvatar = multer({
-  storage: storage
-}).single('avatar');
-
+userSchema.statics.uploadedAvatar = multer({ storage: storage }).single('avatar');
 userSchema.statics.avatarPath = AVATAR_PATH;
 
 const User = mongoose.model('User', userSchema);
