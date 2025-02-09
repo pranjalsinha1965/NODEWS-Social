@@ -107,6 +107,21 @@ NODEWS-Social/
 - Token and session-based authentication
 - Sanitized API endpoints
 
+- Note:
+
+** You're correct — if two-step verification is enabled for a Gmail account, NodeMailer won't work with just the standard username and password authentication **
+
+Solution: 
+Use an App Password
+- Steps to Generate App Password for Gmail
+- Go to Google Account Security.
+- Under "Signing in to Google", enable Two-Step Verification if you haven't already.
+- After enabling it, you'll see an option for App Passwords.
+- Select App Passwords, then:
+- Choose Mail as the app.
+- Choose Other (custom) and give it a meaningful name, like NodeMailer.
+- Google will generate a 16-character password.Copy that password.
+
 ---
 
 ## 📋 **API Testing**
