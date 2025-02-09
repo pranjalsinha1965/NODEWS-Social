@@ -3,6 +3,7 @@ const Post = require('../models/post');
 const commentsMailer = require('../mailers/comments_mailer');
 const commentsEmailWorker = require('../workers/comment_email_worker');
 const queue = require('../config/kue');
+const Like = require('../models/like');
 
 module.exports.create = async function(req, res) {
     try {
@@ -13,7 +14,7 @@ module.exports.create = async function(req, res) {
         }
 
         // Find the post by ID
-        const post = await Post.findById(req.body.post);
+        let post = await Post.findById(req.body.post);
 
         if (post) {
             // Create the new comment
@@ -30,7 +31,7 @@ module.exports.create = async function(req, res) {
             // Populate and send email notification
             comment = await comment.populate('user', 'name email');
             commentsMailer.newComment(comment);
-            let job = queue.create('email', comment);
+            let job = queue.create('emails', comment);
             job.save(function(err){
                 if(err){
                     console.log('Error in sending to the queue', err);
