@@ -57,30 +57,6 @@ NODEWS-Social/
 
 ---
 
-## 🧑‍💻 **Topics Covered**
-
-- Project management  
-- Error handling  
-- Database management  
-- Flash notifications  
-- CSRF protection  
-- Asynchronous calls  
-- User authentication  
-- Web application security  
-- Version control with Git  
-- MongoDB queries  
-- Secure password storage  
-- RESTful API development  
-- API testing with Postman  
-- Passport (Local and JWT strategies)  
-- Multer file uploads  
-- User profile picture management  
-- Secure API endpoints  
-- Frontend AJAX interaction  
-- Session and token-based authentication  
-
----
-
 ## 🔧 **Setup Instructions**
 
 ### **Prerequisites**
@@ -139,12 +115,6 @@ All backend operations are tested using **Postman**. The API documentation can b
 
 ---
 
-## 📜 **License**
-
-This project is licensed under the MIT License.
-
----
-
 ## 🤝 **Contributing**
 
 Contributions are welcome! Fork the repository, create a feature branch, and submit a pull request.
@@ -154,5 +124,4 @@ Contributions are welcome! Fork the repository, create a feature branch, and sub
 ## 📬 **Contact**
 
 - **Author**: Pranjal Sinha  
-- **GitHub**: [pranjalsinha1965](https://github.com/pranjalsinha1965)  
 - **LinkedIn**: [pranjalsinha02](https://www.linkedin.com/in/pranjalsinha02)
