@@ -1,28 +1,31 @@
+const socketio = require('socket.io');
 
-module.exports.chatSockets = function(socketServer){
-    let io = require('socket.io')(socketServer);
+module.exports.chatSockets = function (socketServer) {
+  // Initialize socket.io with proper CORS settings
+  const io = socketio(socketServer, {
+    cors: {
+      origin: "*", // Allow connections from any origin for development purposes
+    },
+  });
 
-    io.sockets.on('connection', function(socket){
-        console.log('new connection received', socket.id);
+  io.on('connection', (socket) => {
+    console.log('New connection received:', socket.id);
 
-        socket.on('disconnect', function(){
-            console.log('socket disconnected!');
-        });
-
-        
-        socket.on('join_room', function(data){
-            console.log('joining request rec.', data);
-
-            socket.join(data.chatroom);
-
-            io.in(data.chatroom).emit('user_joined', data);
-        });
-
-        // CHANGE :: detect send_message and broadcast to everyone in the room
-        socket.on('send_message', function(data){
-            io.in(data.chatroom).emit('receive_message', data);
-        });
-
+    // Handle disconnection
+    socket.on('disconnect', () => {
+      console.log('Socket disconnected:', socket.id);
     });
 
-}
+    // Handle joining a chat room
+    socket.on('join_room', (data) => {
+      console.log('Joining request received:', data);
+      socket.join(data.chatroom);
+      io.in(data.chatroom).emit('user_joined', data);
+    });
+
+    // Handle sending messages
+    socket.on('send_message', (data) => {
+      io.in(data.chatroom).emit('receive_message', data);
+    });
+  });
+};
