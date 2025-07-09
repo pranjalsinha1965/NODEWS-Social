@@ -5,7 +5,7 @@
 //     db: 'codeial_development', 
 //     smtp: {
 //         service: 'gmail', 
-//         host: 'smtp.gmail.com', 
+//         host: 'smtp.gmail.com',    
 //         port: 587, 
 //         secure: false, 
 //         auth: {

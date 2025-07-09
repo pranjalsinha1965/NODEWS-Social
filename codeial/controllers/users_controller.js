@@ -365,16 +365,16 @@
 // };
 
 // // Destroy the user session (logout)
-// module.exports.destroySession = function (req, res) {
-//     req.logout(function (err) {
-//         if (err) {
-//             req.flash('error', 'Error logging out');
-//             return res.redirect('/');
+// module.exports.destroySession = function(req, res, next){
+//     req.logout(function(err) {
+//         if (err) { 
+//             return next(err); 
 //         }
 //         req.flash('success', 'You have logged out!');
 //         return res.redirect('/');
 //     });
 // };
+
 
 
 const fs = require('fs');
@@ -482,8 +482,26 @@ module.exports.createSession = function(req, res) {
 }
 
 // Destroy session on logout
-module.exports.destroySession = function(req, res) {
-    req.logout();
-    req.flash('success', 'You have logged out!');
-    return res.redirect('/');
-}
+// module.exports.destroySession = function(req, res) {
+//     req.logout();
+//     req.flash('success', 'You have logged out!');
+//     return res.redirect('/');
+// }
+
+// module.exports.destroySession = function(req, res)
+// {
+//     console.log(`${res.locals.user.name} signed out!`)
+//     req.logout();
+//     req.flash('success', 'Logged Out Successfully');
+//     return res.redirect('/users/sign-in');
+// }
+
+module.exports.destroySession = function(req, res, next){
+    req.logout(function(err) {
+        if (err) { 
+            return next(err); 
+        }
+        req.flash('success', 'You have logged out!');
+        return res.redirect('/');
+    });
+};
