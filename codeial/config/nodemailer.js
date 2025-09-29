@@ -45,7 +45,7 @@ let transporter = nodemailer.createTransport({
   secure: false,
   auth: {
     user: "pranjalsinha1965@gmail.com",
-    pass: "k`Fw_y`af4\>(fJ" // Replace with the generated App Password
+    pass: "jtvv nchj bbhi nema" // Replace with the generated App Password
   }, 
   tls: {
     rejectUnauthorized: false // Allow self-signed certificates
